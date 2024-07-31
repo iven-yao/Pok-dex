@@ -1,5 +1,4 @@
 const express = require('express');
-const axios = require('axios');
 const PokemonAbility = require('../models/Pokemon_Ability');
 
 const router = express.Router();
