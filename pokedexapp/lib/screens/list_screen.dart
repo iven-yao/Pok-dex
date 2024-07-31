@@ -1,20 +1,21 @@
-import 'dart:ffi';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:pokedexapp/services/api_service.dart';
 import 'package:pokedexapp/utils/database_helper.dart';
 
-import '../models/ability.dart';
+import '../models/ability_model.dart';
 
-class ListView extends StatefulWidget {
+class ListScreen extends StatefulWidget {
+  const ListScreen({super.key});
+
   @override
-  _ListViewState createState() => _ListViewState();
+  _ListScreenState createState() => _ListScreenState();
 }
 
-class _ListViewState extends State<ListView> {
+class _ListScreenState extends State<ListScreen> {
   final dbHelper = DatabaseHelper.instance;
   final apiService = ApiService();
-  List<Ability> abilities = [];
+  List<AbilityModel> abilities = [];
   bool isLoading = false;
 
   @override
@@ -29,12 +30,7 @@ class _ListViewState extends State<ListView> {
     });
 
     try{
-      List<Ability> apiAbilities = await apiService.fetchAbilities();
-
-      for(var ability in apiAbilities) {
-        await dbHelper.insertAbility(ability);
-      }
-
+      List<AbilityModel> apiAbilities = await apiService.getAllAbilities();
       await _refreshAbilityList();
     } catch(e) {
       print('Error loading data: $e');
@@ -49,11 +45,31 @@ class _ListViewState extends State<ListView> {
 
   // fetch abilities from SQLite
   Future<void> _refreshAbilityList() async {
-    List<Ability> fetchedAbilities = await dbHelper.getAbilities();
+    List<AbilityModel> fetchedAbilities = await dbHelper.getAbilities();
     setState(() {
       abilities =  fetchedAbilities;
     });
   }
 
-  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pokedex')),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        itemCount: abilities.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(abilities[index].name),
+            subtitle: Text(abilities[index].description),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _loadData,
+        child: const Icon(Icons.refresh),
+      ),
+    );
+  }
 }

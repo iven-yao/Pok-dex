@@ -1,5 +1,5 @@
 
-class Pokemon {
+class PokemonModel {
   final int id;
   final String name;
   final String type_1;
@@ -12,7 +12,7 @@ class Pokemon {
   final int speed;
   final String image_url;
 
-  const Pokemon({
+  const PokemonModel({
     required this.id,
     required this.name,
     required this.type_1,
@@ -42,8 +42,8 @@ class Pokemon {
     };
   }
 
-  factory Pokemon.fromJson(Map<String, dynamic> json) {
-    return Pokemon(
+  factory PokemonModel.fromJson(Map<String, dynamic> json) {
+    return PokemonModel(
         id: json['id'],
         name: json['name'],
         type_1: json['type_1'],
