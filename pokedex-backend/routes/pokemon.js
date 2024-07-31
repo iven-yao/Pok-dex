@@ -3,7 +3,7 @@ const axios = require('axios');
 const Pokemon = require('../models/Pokemon');
 const { decodedStats, getAbilityIdFromUrl } = require('../utils/pokemonDataUtils');
 const PokemonAbility = require('../models/Pokemon_Ability');
-const { POKEAPI_BASE_URI } = require('../utils/constants');
+const { POKEAPI_BASE_URL } = require('../utils/constants');
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 // @access  Should be private, not yet implement
 router.post('/seedFromPokeAPI', async (req, res) => {  
     try {
-        const response = await axios.get(`${POKEAPI_BASE_URI}/pokemon?limit=${process.env.POKEMON_LIMIT || 151}`);
+        const response = await axios.get(`${POKEAPI_BASE_URL}/pokemon?limit=${process.env.POKEMON_LIMIT || 1025}`);
         const pokemons = response.data.results;
 
         for(const pokemon of pokemons) {

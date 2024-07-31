@@ -17,6 +17,18 @@ class PokemonAbility {
         );
     }
 
+    static async createInBatch(client, relationData) {
+        const relationInsertStmt = '\
+        INSERT INTO pokemon_ability (pokemon_id, ability_id, is_hidden) \
+        SELECT * FROM UNNEST ($1::int[], $2::int[], $3::boolean[]) ON CONFLICT (pokemon_id, ability_id) DO NOTHING';
+
+        await client.query(relationInsertStmt, [
+            relationData.map(r => r.pokemon_id),
+            relationData.map(r => r.ability_id),
+            relationData.map(r => r.is_hidden)
+        ]);
+    }
+
 }
 
 module.exports = PokemonAbility;

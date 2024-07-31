@@ -17,7 +17,7 @@ class User {
   }
 
   static async findById(id) {
-    const result = await pool.query('SELECT id, username, email FROM users WHERE id = $1', [id]);
+    const result = await pool.query('SELECT id, username, email, refresh_token FROM users WHERE id = $1', [id]);
     return result.rows[0];
   }
 
@@ -35,11 +35,11 @@ class User {
   }
 
   static async renewRefreshToken(id, token) {
-    await pool.query('UPDATE users SET refreshToken = $1 WHERE id = $2', [token, id]);
+    await pool.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [token, id]);
   }
 
   static async removeRefreshToken(id) {
-    await pool.query('UPDATE users SET refreshToken = NULL WHERE id = $1',[id]);
+    await pool.query('UPDATE users SET refresh_token = NULL WHERE id = $1',[id]);
   }
 
   static async getUserName(id) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const Type = require('../models/Types');
-const { POKEAPI_BASE_URI } = require('../utils/constants');
+const { POKEAPI_BASE_URL } = require('../utils/constants');
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 // @access  Should be private, not yet implement
 router.post('/seedFromPokeAPI', async (req, res) => {  
     try {
-        const response = await axios.get(`${POKEAPI_BASE_URI}/type?limit=${process.env.TYPE_LIMIT || 18}`);
+        const response = await axios.get(`${POKEAPI_BASE_URL}/type?limit=${process.env.TYPE_LIMIT || 18}`);
         const types = response.data.results;
 
         for(const type of types) {

@@ -1,3 +1,3 @@
-const POKEAPI_BASE_URI = "https://pokeapi.co/api/v2";
+const POKEAPI_BASE_URL = "https://pokeapi.co/api/v2";
 
-module.exports = {POKEAPI_BASE_URI}
+module.exports = {POKEAPI_BASE_URL}

@@ -18,6 +18,20 @@ class Ability {
 
     }
 
+    static async createInBatch(client, abilityData) {
+        const abilityInsertQuery = `
+        INSERT INTO abilities (id, name, description)
+        SELECT * FROM UNNEST ($1::int[], $2::text[], $3::text[])
+        ON CONFLICT (id) DO NOTHING
+        `;
+
+        await client.query(abilityInsertQuery, [
+            abilityData.map(a => a.id),
+            abilityData.map(a => a.name),
+            abilityData.map(a => a.description)
+        ]);
+    }
+
 }
 
 module.exports = Ability;

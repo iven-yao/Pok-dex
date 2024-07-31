@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => {
         const accessToken = generateAccessToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
     
-        await User.renewRefreshToken(refreshToken);
+        await User.renewRefreshToken(user.id, refreshToken);
     
         res.json({ accessToken, refreshToken });
     } catch (err) {
@@ -78,8 +78,8 @@ router.post('/refresh-token', async (req, res) => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const user = await User.findById(decoded.user.id);
-    
-        if (!user || user.refreshToken !== refreshToken) {
+
+        if (!user || user.refresh_token !== refreshToken) {
             return res.status(401).json({ msg: 'Invalid refresh token' });
         }
     

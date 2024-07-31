@@ -1,31 +1,31 @@
-const { POKEAPI_BASE_URI } = require("../utils/constants");
+const { POKEAPI_BASE_URL } = require("../utils/constants");
 const { getAbilityDescription } = require("../utils/pokemonDataUtils");
 const { fetchWithRetry } = require("../utils/axiosUtils");
+const Ability = require("../models/Ability");
 
 const seedAbility = async (client, multibar) => {
+
+    
+    
     try {
-        const response = await fetchWithRetry(`${POKEAPI_BASE_URI}/ability?limit=${process.env.ABILITY_LIMIT || 1000}`);
+        const response = await fetchWithRetry(`${POKEAPI_BASE_URL}/ability?limit=${process.env.ABILITY_LIMIT || 1000}`);
         const abilities = response.data.results;
         const bar = multibar.create(abilities.length, 0,{filename: "seedAbility"});
 
-        for(const ability of abilities) {
-            const detailResponse = await fetchWithRetry(ability.url);
-            const abilityData = {
+        const batchSize = 50;
+        for (let i = 0; i < abilities.length; i += batchSize) {
+            const batch = abilities.slice(i, i + batchSize);
+            const abilityDetails = await Promise.all(batch.map(ability => fetchWithRetry(ability.url)));
+
+            const abilityData = abilityDetails.map(detailResponse => ({
                 id: detailResponse.data.id,
                 name: detailResponse.data.name,
                 description: getAbilityDescription(detailResponse.data.flavor_text_entries)
-            };
+            }));
+            
+            await Ability.createInBatch(client, abilityData);
 
-            const {id, name, description} = abilityData;
-            await client.query(
-                '\
-                INSERT INTO abilities (id, name, description) \
-                VALUES ($1, $2, $3) \
-                ON CONFLICT (id) DO NOTHING',
-                [id, name, description]
-            );
-
-            bar.increment();
+            bar.increment(batch.length);
         }
         
     } catch (err) {

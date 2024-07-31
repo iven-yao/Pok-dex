@@ -1,30 +1,24 @@
+const Type = require("../models/Types");
 const { fetchWithRetry } = require("../utils/axiosUtils");
-const { POKEAPI_BASE_URI } = require("../utils/constants");
+const { POKEAPI_BASE_URL } = require("../utils/constants");
 
 const seedType = async (client, multibar) => {
+
     try {
-        const response = await fetchWithRetry(`${POKEAPI_BASE_URI}/type?limit=${process.env.TYPE_LIMIT || 18}`);
+        const response = await fetchWithRetry(`${POKEAPI_BASE_URL}/type?limit=${process.env.TYPE_LIMIT || 18}`);
         const types = response.data.results;
-        const bar = multibar.create(types.length, 0,{filename: "seedType   "});
+        const bar = multibar.create(types.length, 0, { filename: "seedType   " });
 
-        for(const type of types) {
-            const detailResponse = await fetchWithRetry(type.url);
-            const typeData = {
-                id: detailResponse.data.id,
-                name: detailResponse.data.name,
-            };
+        const typeDetails = await Promise.all(types.map(type => fetchWithRetry(type.url)));
 
-            await client.query(
-                '\
-                INSERT INTO types (id, name) \
-                VALUES ($1, $2) \
-                ON CONFLICT (id) DO NOTHING',
-                [typeData.id, typeData.name]
-            );
+        const typeData = typeDetails.map(detailResponse => ({
+            id: detailResponse.data.id,
+            name: detailResponse.data.name,
+        }));
 
-            bar.increment();
-        }
+        await Type.createInBatch(client, typeData);
 
+        bar.increment(types.length);
 
     } catch (err) {
         console.error(err.message);

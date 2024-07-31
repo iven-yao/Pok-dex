@@ -15,9 +15,20 @@ class Type {
             ON CONFLICT (id) DO NOTHING',
             [id, name]
         );
-
     }
 
+    static async createInBatch(client, typeData) {
+        const typeInsertQuery = `
+            INSERT INTO types (id, name)
+            SELECT * FROM UNNEST ($1::int[], $2::text[])
+            ON CONFLICT (id) DO NOTHING
+        `;
+
+        await client.query(typeInsertQuery, [
+            typeData.map(t => t.id),
+            typeData.map(t => t.name)
+        ]);
+    }
 }
 
 module.exports = Type;

@@ -3,9 +3,8 @@ const axios = require('axios');
 const PokemonAbility = require('../models/Pokemon_Ability');
 
 const router = express.Router();
-const POKEAPI_BASE_URI = "https://pokeapi.co/api/v2";
 
-// @route   GET api/ability/
+// @route   GET api/pokemon_ability/
 // @desc    get all ability data
 // @access  Public
 router.get('/', async (req, res) => {
