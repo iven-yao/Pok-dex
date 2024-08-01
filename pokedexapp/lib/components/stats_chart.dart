@@ -13,7 +13,7 @@ class PokemonStatsChart extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
             child: Text(
               'Stats Chart',
               style: TextStyle(

@@ -115,7 +115,7 @@ class PokemonDetailScreenState extends State<PokemonDetailScreen> {
               AdditionalImageGallery(images: images),
               PokemonStatsChart(pokemon: widget.pokemon),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                 child: Text(
                   'Abilities',
                   style: TextStyle(

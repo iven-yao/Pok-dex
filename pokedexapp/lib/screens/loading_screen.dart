@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -43,14 +44,14 @@ class LoadingScreenState extends State<LoadingScreen> {
   }
 
   Future<bool> _shouldFetchFromApi(DateTime? lastFetchTime) async {
-    // Check network connectivity, if no internet don't try to fetch
+    // Check network connectivity, if no connection don't try to fetch
     var connectivityResult = await (Connectivity().checkConnectivity());
     if(connectivityResult == ConnectivityResult.none) return false;
 
     // If can not find last fetch time in metadata db, always fetch
     if (lastFetchTime == null) return true;
 
-    // If over 24 hrs since last fetch time, always fetch otherwise use local
+    // over 24 hrs since last fetch time, fetch otherwise use local db
     final now = DateTime.now();
     final difference = now.difference(lastFetchTime);
     return difference.inHours >= 24;
@@ -122,7 +123,7 @@ class LoadingScreenState extends State<LoadingScreen> {
               );
             });
           }
-          // Show loading animation
+
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -133,13 +134,20 @@ class LoadingScreenState extends State<LoadingScreen> {
                       height: 300,
                     )
                 ),
-                const Text(
-                  "Loading...",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amber,
-                  ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    WavyAnimatedText(
+                      "Loading...",
+                      textStyle: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber
+                      ),
+                      speed: const Duration(milliseconds: 50)
+                    )
+                  ],
+                  repeatForever: true,
+
                 ),
               ],
             ),
