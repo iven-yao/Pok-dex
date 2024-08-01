@@ -1,7 +1,6 @@
 const { POKEAPI_BASE_URL } = require("../utils/constants");
 const { getAbilityIdFromUrl, decodedStats } = require("../utils/pokemonDataUtils");
 const { fetchWithRetry, fetchDetails } = require("../utils/axiosUtils");
-const { pool } = require("../config/seed-connect");
 const Pokemon = require("../models/Pokemon");
 const PokemonAbility = require("../models/Pokemon_Ability");
 const PokemonImage = require("../models/PokemonImage");
@@ -67,48 +66,6 @@ const seedPokemon = async (client, multibar) => {
 
             bar.increment(batch.length);
         }
-
-        // for(const pokemon of pokemons) {
-        //     const detailResponse = await fetchWithRetry(pokemon.url);
-        //     const pokemonData = {
-        //         id: detailResponse.data.id,
-        //         name: detailResponse.data.name,
-        //         type_1: detailResponse.data.types[0].type.name,
-        //         type_2: detailResponse.data.types[1]?.type.name || null,
-        //         height: detailResponse.data.height,
-        //         weight: detailResponse.data.weight,
-        //         image_url: detailResponse.data.sprites.front_default,
-        //         ...decodedStats(detailResponse.data.stats)
-        //     };
-
-        //     const {id, name, type_1, type_2, height, weight, hp, attack, defense, special_attack, special_defense, speed, image_url} = pokemonData;
-        //     await client.query(
-        //         '\
-        //         INSERT INTO pokemons (id, name, type_1, type_2, height, weight, hp, attack, defense, special_attack, special_defense, speed, image_url) \
-        //         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) \
-        //         ON CONFLICT (id) DO NOTHING',
-        //         [id, name, type_1, type_2, height, weight, hp, attack, defense, special_attack, special_defense, speed, image_url]
-        //     );
-
-        //     for(const ability of detailResponse.data.abilities) {
-        //         const relationData = {
-        //             pokemon_id: detailResponse.data.id, 
-        //             ability_id: getAbilityIdFromUrl(ability.ability.url),
-        //             is_hidden: ability.is_hidden
-        //         }
-
-        //         const {pokemon_id, ability_id, is_hidden} = relationData;
-        //         await client.query(
-        //             '\
-        //             INSERT INTO pokemon_ability (pokemon_id, ability_id, is_hidden) \
-        //             VALUES ($1, $2, $3) \
-        //             ON CONFLICT (pokemon_id, ability_id) DO NOTHING',
-        //             [pokemon_id, ability_id, is_hidden]
-        //         );
-        //     }
-
-        //     bar.increment();
-        // }
         
     } catch (err) {
         console.error(err.message);
