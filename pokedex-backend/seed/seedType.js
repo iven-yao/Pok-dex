@@ -1,4 +1,4 @@
-const Type = require("../models/Types");
+const Type = require("../models/PokemonType");
 const { fetchWithRetry } = require("../utils/axiosUtils");
 const { POKEAPI_BASE_URL } = require("../utils/constants");
 

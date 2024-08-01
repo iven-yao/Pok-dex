@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     try {
         const abilities = await Ability.getAll();
 
-        res.json({abilities});
+        res.json(abilities);
 
     } catch (err) {
         console.error(err.message);

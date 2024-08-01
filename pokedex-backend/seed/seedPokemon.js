@@ -4,6 +4,7 @@ const { fetchWithRetry, fetchDetails } = require("../utils/axiosUtils");
 const { pool } = require("../config/seed-connect");
 const Pokemon = require("../models/Pokemon");
 const PokemonAbility = require("../models/Pokemon_Ability");
+const PokemonImage = require("../models/PokemonImage");
 
 const seedPokemon = async (client, multibar) => {
 
@@ -39,7 +40,31 @@ const seedPokemon = async (client, multibar) => {
             );
 
             await PokemonAbility.createInBatch(client, relationData);
+
+            const imagesData = pokemonDetails.flatMap(detail =>{
+                const entries = Object.entries(detail.sprites);
+                return entries.filter(([key, value]) => key !== 'versions' && value !== null)
+                .flatMap(([key, value]) => {
+                    
+                    if(key === 'other') {
+                        const officialArtworkEntries = Object.entries(value["official-artwork"]);
+                        return officialArtworkEntries.map(([official_key, official_value]) =>({
+                            pokemon_id: detail.id,
+                            description: `official_artwork_${official_key}`,
+                            image_url: official_value
+                        }));
+                    }
+
+                    return ({
+                        pokemon_id: detail.id,
+                        description: key,
+                        image_url: value
+                    })
+                })
+            });
             
+            await PokemonImage.createInBatch(client, imagesData);
+
             bar.increment(batch.length);
         }
 

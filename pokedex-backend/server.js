@@ -6,6 +6,7 @@ const pokemonRoutes = require('./routes/pokemon');
 const abilityRoutes = require('./routes/ability');
 const typeRoutes = require('./routes/type');
 const pokemonAbilityRoutes = require('./routes/pokemonAbility');
+const pokemonImageRoutes = require('./routes/pokemonImages');
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use('/api/pokemon', pokemonRoutes);
 app.use('/api/ability', abilityRoutes);
 app.use('/api/type', typeRoutes);
 app.use('/api/pokemon_ability', pokemonAbilityRoutes);
+app.use('/api/pokemon_image', pokemonImageRoutes);
 
 const PORT = process.env.PORT || 8080;
 

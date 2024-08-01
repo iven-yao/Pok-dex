@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     try {
         const pokemons = await Pokemon.getAll();
 
-        res.json({pokemons});
+        res.json(pokemons);
 
     } catch (err) {
         console.error(err.message);

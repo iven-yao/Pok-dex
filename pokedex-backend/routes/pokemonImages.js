@@ -1,16 +1,16 @@
 const express = require('express');
-const Type = require('../models/PokemonType');
+const PokemonImage = require('../models/PokemonImage');
 
 const router = express.Router();
 
-// @route   GET api/type/
-// @desc    get all type data
+// @route   GET api/pokemon_images/
+// @desc    get all images data
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const types = await Type.getAll();
+        const pokemon_images = await PokemonImage.getAll();
 
-        res.json(types);
+        res.json(pokemon_images);
 
     } catch (err) {
         console.error(err.message);

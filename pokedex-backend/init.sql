@@ -46,6 +46,14 @@ CREATE TABLE IF NOT EXISTS types (
     name VARCHAR(20)
 );
 
+-- Create Pokemon_Images table
+CREATE TABLE IF NOT EXISTS pokemon_images (
+    id SERIAL PRIMARY KEY,
+    pokemon_id INTEGER,
+    description VARCHAR(50),
+    image_url VARCHAR(255)
+);
+
 -- Create Likes table
 CREATE TABLE IF NOT EXISTS likes (
     id SERIAL PRIMARY KEY,
@@ -74,3 +82,4 @@ CREATE INDEX IF NOT EXISTS idx_comments_pokemon_id ON comments(pokemon_id);
 CREATE INDEX IF NOT EXISTS idx_ability_name ON abilities(name);
 CREATE INDEX IF NOT EXISTS idx_type_name ON types(name);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_pm_ab_pm_id_ab_id ON pokemon_ability(pokemon_id, ability_id);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_pm_img_pm_id_desc ON pokemon_images(pokemon_id, description);
