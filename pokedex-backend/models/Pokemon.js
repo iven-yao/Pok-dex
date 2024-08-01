@@ -19,9 +19,24 @@ class Pokemon {
 
     static async createInBatch(client, pokemonDataList) {
         const pokemonInsertStmt = '\
-        INSERT INTO pokemons (id, name, type_1, type_2, height, weight, hp, attack, defense, special_attack, special_defense, speed, image_url) \
-        SELECT * FROM UNNEST ($1::int[], $2::text[], $3::text[], $4::text[], $5::int[], $6::int[], \
-        $7::int[], $8::int[], $9::int[], $10::int[], $11::int[], $12::int[], $13::text[]) ON CONFLICT (id) DO NOTHING';
+        INSERT INTO pokemons (id, name, type_1, type_2, height, weight, hp, attack, defense, special_attack, special_defense, speed, image_url)\
+        SELECT * FROM UNNEST (\
+            $1::int[], $2::text[], $3::text[], $4::text[], $5::int[], $6::int[],\
+            $7::int[], $8::int[], $9::int[], $10::int[], $11::int[], $12::int[], $13::text[]\
+        )\
+        ON CONFLICT (id) DO UPDATE SET\
+            name = EXCLUDED.name,\
+            type_1 = EXCLUDED.type_1,\
+            type_2 = EXCLUDED.type_2,\
+            height = EXCLUDED.height,\
+            weight = EXCLUDED.weight,\
+            hp = EXCLUDED.hp,\
+            attack = EXCLUDED.attack,\
+            defense = EXCLUDED.defense,\
+            special_attack = EXCLUDED.special_attack,\
+            special_defense = EXCLUDED.special_defense,\
+            speed = EXCLUDED.speed,\
+            image_url = EXCLUDED.image_url';
 
         await client.query(pokemonInsertStmt, [
             pokemonDataList.map(p => p.id),

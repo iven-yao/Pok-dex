@@ -22,7 +22,9 @@ class Ability {
         const abilityInsertQuery = `
         INSERT INTO abilities (id, name, description)
         SELECT * FROM UNNEST ($1::int[], $2::text[], $3::text[])
-        ON CONFLICT (id) DO NOTHING
+        ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        description = EXCLUDED.description
         `;
 
         await client.query(abilityInsertQuery, [

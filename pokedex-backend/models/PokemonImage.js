@@ -18,11 +18,12 @@ class PokemonImage {
     }
 
     static async createInBatch(client, imageData) {
-        const pokemonImageInsertQuery = `
-            INSERT INTO pokemon_images (pokemon_id, description, image_url)
-            SELECT * FROM UNNEST ($1::int[], $2::text[], $3::text[])
-            ON CONFLICT (pokemon_id, description) DO NOTHING
-        `;
+        const pokemonImageInsertQuery = '\
+            INSERT INTO pokemon_images (pokemon_id, description, image_url) \
+            SELECT * FROM UNNEST ($1::int[], $2::text[], $3::text[]) \
+            ON CONFLICT (pokemon_id, description) DO UPDATE SET \
+            image_url = EXCLUDED.image_url \
+        ';
 
         await client.query(pokemonImageInsertQuery, [
             imageData.map(t => t.pokemon_id),

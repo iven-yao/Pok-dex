@@ -24,7 +24,7 @@ const seedPokemon = async (client, multibar) => {
                 type_2: detail.types[1]?.type.name || null,
                 height: detail.height,
                 weight: detail.weight,
-                image_url: detail.sprites.front_default,
+                image_url: detail.sprites.other['official-artwork'].front_default,
                 ...decodedStats(detail.stats)
             }));
 
