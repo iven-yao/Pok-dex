@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokedexapp/components/type_badge.dart';
 import 'package:pokedexapp/models/pokemon_model.dart';
 import 'package:pokedexapp/utils/string_helper.dart';
 
@@ -29,27 +30,8 @@ class PokemonListItem extends StatelessWidget {
         ),
         subtitle: Row(
           children: [
-            Container(
-              width: 60,
-              margin: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-               child: Text(pokemonData.type_1),
-              ),
-            ),
-            if(pokemonData.type_2 != null) Container(
-              width: 60,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Center(
-                child: Text(pokemonData.type_2!),
-              ),
-            )
+            TypeBadge(type: pokemonData.type_1),
+            if(pokemonData.type_2 != null) TypeBadge(type: pokemonData.type_2!)
           ],
 
         ),

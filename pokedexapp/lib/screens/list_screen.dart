@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedexapp/components/pokemon_list_item.dart';
+import 'package:pokedexapp/components/type_badge.dart';
 import 'package:pokedexapp/models/pokemon_model.dart';
 import 'package:pokedexapp/models/type_model.dart';
 import '../utils/database_helper.dart';
@@ -188,7 +189,8 @@ class ListScreenState extends State<ListScreen> {
                   dropdownMenuEntries: allTypes.map<DropdownMenuEntry<TypeModel>>((TypeModel type) {
                     return DropdownMenuEntry<TypeModel>(
                       value: type,
-                      label: type.name
+                      label: type.name,
+                      leadingIcon: Icon(TypeBadge.getTypeIcon(type.name))
                     );
                   }).toList(),
                 ),

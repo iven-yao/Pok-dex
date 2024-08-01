@@ -132,9 +132,17 @@ class DatabaseHelper {
     });
   }
 
-  Future<List<AbilityModel>> getAbilities() async {
+  Future<List<AbilityModel>> getAbilitiesByPokemonId(int id) async {
     final db = await instance.database;
-    final maps = await db.query('abilities');
+    final maps = await db.rawQuery('''
+      SELECT abilities.id, name, description, is_hidden 
+      FROM pokemon_ability
+      RIGHT JOIN abilities 
+      ON pokemon_ability.ability_id = abilities.id
+      WHERE pokemon_ability.pokemon_id = $id
+    ''');
+
+    print(maps.first.entries.toString());
 
     return List.generate(maps.length, (i) => AbilityModel.fromJson(maps[i]));
   }
@@ -249,5 +257,12 @@ class DatabaseHelper {
 
       await batch.commit();
     });
+  }
+
+  Future<List<PokemonImageModel>> getImagesByPokemonId(int id) async {
+    final db = await instance.database;
+    final maps = await db.query('pokemon_images', where: 'pokemon_id = ?', whereArgs: [id]);
+
+    return List.generate(maps.length, (i) => PokemonImageModel.fromJson(maps[i]));
   }
 }

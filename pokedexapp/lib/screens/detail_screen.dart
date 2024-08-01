@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:pokedexapp/components/type_badge.dart';
+import 'package:pokedexapp/models/pokemon_image_model.dart';
 import 'package:pokedexapp/models/pokemon_model.dart';
 import 'package:pokedexapp/utils/string_helper.dart';
+
+import '../components/ability_card.dart';
+import '../components/image_gallery.dart';
+import '../components/main_image.dart';
+import '../components/stats_chart.dart';
+import '../models/ability_model.dart';
+import '../models/comment_model.dart';
+import '../services/api_service.dart';
+import '../utils/database_helper.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
   final PokemonModel pokemon;
@@ -12,7 +23,34 @@ class PokemonDetailScreen extends StatefulWidget {
 }
 
 class PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  final dbHelper = DatabaseHelper.instance;
+  final apiService = ApiService();
+  List<AbilityModel> abilities = [];
+  List<PokemonImageModel> images = [];
+  bool isLoading = false;
+  // not yet implemented
   bool isLiked = false;
+  // not yet implemented
+  List<CommentModel> comments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFromDb();
+  }
+
+  Future<void> _loadFromDb() async {
+    setState(() {
+      isLoading = true;
+    });
+    List<AbilityModel> fetchedAbilities = await dbHelper.getAbilitiesByPokemonId(widget.pokemon.id);
+    List<PokemonImageModel> fetchedImages = await dbHelper.getImagesByPokemonId(widget.pokemon.id);
+    setState(() {
+      abilities = fetchedAbilities;
+      images = fetchedImages;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,50 +99,79 @@ class PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 ],
               ),
               Center(
-                child: Image.network(
-                  widget.pokemon.image_url,
-                  height: 200,
-                  width: 200,
-                  fit: BoxFit.contain,
+                child: PokemonMainImage(
+                  imageUrl: widget.pokemon.image_url,
+                  type1: widget.pokemon.type_1,
+                  type2: widget.pokemon.type_2,
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'ID: #${widget.pokemon.id}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text('Type 1: ${widget.pokemon.type_1}'),
-              if (widget.pokemon.type_2 != null)
-                Text('Type 2: ${widget.pokemon.type_2}'),
-              const SizedBox(height: 16),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    icon: Icon(
-                      isLiked ? Icons.favorite : Icons.favorite_border,
-                      color: isLiked ? Colors.red : null,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        isLiked = !isLiked;
-                      });
-                    },
-                  ),
-                  Text(isLiked ? 'Liked' : 'Like'),
+                  TypeBadge(type: widget.pokemon.type_1),
+                  if(widget.pokemon.type_2 != null) TypeBadge(type: widget.pokemon.type_2!)
                 ],
+              ),
+              AdditionalImageGallery(images: images),
+              PokemonStatsChart(pokemon: widget.pokemon),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Abilities',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: abilities.length,
+                itemBuilder: (context, index) {
+                  return AbilityCard(ability: abilities[index]);
+                },
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showCommentsDialog(context);
-        },
-        child: const Icon(Icons.comment),
-        backgroundColor: Colors.redAccent,
-      ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomRight,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              FloatingActionButton.small(
+                shape: const CircleBorder(),
+                heroTag: 'like',
+                onPressed: () {
+                  setState(() {
+                    isLiked = !isLiked;
+                });
+                },
+                backgroundColor: Colors.white,
+                child: Icon(
+                  isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: isLiked ? Colors.red : null,
+                ),
+              ),
+              const SizedBox(height: 4),
+              FloatingActionButton.small(
+                shape: const CircleBorder(),
+                heroTag: 'comment',
+                onPressed: () {
+                  // Show comment dialog or navigate to comment screen
+                  _showCommentsDialog(context);
+                },
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.comment),
+              ),
+            ],
+          ),
+        ),
+      )
     );
   }
 
