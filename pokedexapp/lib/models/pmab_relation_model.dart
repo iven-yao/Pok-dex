@@ -1,11 +1,3 @@
-import 'dart:convert';
-
-List<PmabRelationModel> abilityFromJson(String str) =>
-    List<PmabRelationModel>.from(json.decode(str).map((x) => PmabRelationModel.fromJson(x)));
-
-String abilityToJson(List<PmabRelationModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class PmabRelationModel {
   int id;
   int pokemon_id;

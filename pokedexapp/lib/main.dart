@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:pokedexapp/screens/home_screen.dart';
-import 'package:pokedexapp/screens/list_screen.dart';
+import 'package:pokedexapp/screens/loading_screen.dart';
 import 'package:sqflite/sqflite.dart';
 
 void main(){
@@ -17,9 +15,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: "Pokedex",
       initialRoute: 'home',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent)
+      ),
       routes: {
-        'home': (BuildContext context) => const HomeScreen(),
+        'home': (BuildContext context) => const LoadingScreen(),
       },
     );
   }

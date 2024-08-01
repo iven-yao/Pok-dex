@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:pokedexapp/models/pmab_relation_model.dart';
+import 'package:pokedexapp/models/pokemon_image_model.dart';
 import 'package:pokedexapp/models/type_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -23,12 +24,12 @@ class DatabaseHelper {
   Future<Database> _initDB() async {
     final databasePath = await getDatabasesPath();
     final path = join( databasePath, "pokedex.db");
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 1, onOpen: _createDB);
   }
 
-  Future<void> _createDB(Database db, int version) async {
+  Future<void> _createDB(Database db) async {
     await db.execute('''
-      CREATE TABLE abilities (
+      CREATE TABLE IF NOT EXISTS abilities (
         id INTEGER PRIMARY KEY,
         name TEXT,
         description TEXT
@@ -36,14 +37,14 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE types (
+      CREATE TABLE IF NOT EXISTS types (
         id INTEGER PRIMARY KEY,
         name TEXT
       )
     ''');
 
     await db.execute('''
-      CREATE TABLE pokemon_ability (
+      CREATE TABLE IF NOT EXISTS pokemon_ability (
         id INTEGER PRIMARY KEY,
         pokemon_id INTEGER,
         ability_id INTEGER,
@@ -52,7 +53,7 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE pokemons (
+      CREATE TABLE IF NOT EXISTS pokemons (
         id INTEGER PRIMARY KEY,
         name TEXT,
         type_1 TEXT,
@@ -68,7 +69,16 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE metadata(
+      CREATE TABLE IF NOT EXISTS pokemon_images (
+        id INTEGER PRIMARY KEY,
+        pokemon_id INTEGER,
+        description TEXT,
+        image_url TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS metadata(
         key TEXT PRIMARY KEY,
         value TEXT
       )
@@ -189,6 +199,13 @@ class DatabaseHelper {
     });
   }
 
+  Future<List<TypeModel>> getPokemonTypes() async {
+    final db = await instance.database;
+    final maps = await db.query('types');
+
+    return List.generate(maps.length, (i) => TypeModel.fromJson(maps[i]));
+  }
+
   // PMABRelations ------------------------------------------------------------
   Future<int> deleteAllPokemonAbilityRelations() async {
     final db = await instance.database;
@@ -206,6 +223,28 @@ class DatabaseHelper {
 
       for(var relation in relations) {
         batch.insert('pokemon_ability', relation.toJson());
+      }
+
+      await batch.commit();
+    });
+  }
+
+  // PokemonImages ------------------------------------------------------------
+  Future<int> deleteAllPokemonImages() async {
+    final db = await instance.database;
+    final res = await db.rawDelete(('DELETE FROM pokemon_images'));
+
+    return res;
+  }
+
+  Future<void> createPokemonImages(List<PokemonImageModel> pmImages) async {
+    final db = await instance.database;
+
+    await db.transaction((txn) async {
+      Batch batch = txn.batch();
+
+      for(var pmImage in pmImages) {
+        batch.insert('pokemon_images', pmImage.toJson());
       }
 
       await batch.commit();

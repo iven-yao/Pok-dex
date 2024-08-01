@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pokedexapp/models/pmab_relation_model.dart';
+import 'package:pokedexapp/models/pokemon_image_model.dart';
 import 'package:pokedexapp/models/type_model.dart';
 import 'package:pokedexapp/utils/database_helper.dart';
 import '../models/ability_model.dart';
@@ -14,8 +15,7 @@ class ApiService {
     if(response.statusCode == 200) {
       DatabaseHelper.instance.deleteAllAbilities();
 
-      dynamic jsonRes = json.decode(response.body);
-      List<dynamic> jsonList = jsonRes["abilities"];
+      List<dynamic> jsonList = json.decode(response.body);
       return jsonList.map((obj) => AbilityModel.fromJson(obj)).toList();
     } else {
       throw Exception("Failed to load Abilities");
@@ -25,8 +25,7 @@ class ApiService {
   Future<List<PokemonModel>> getAllPokemons() async {
     final response = await http.get(Uri.parse('$baseUrl/pokemon'));
     if(response.statusCode == 200) {
-      dynamic jsonRes = json.decode(response.body);
-      List<dynamic> jsonList = jsonRes["pokemons"];
+      List<dynamic> jsonList = json.decode(response.body);
       return jsonList.map((obj) => PokemonModel.fromJson(obj)).toList();
     } else {
       throw Exception("Failed to load Pokemons");
@@ -36,8 +35,7 @@ class ApiService {
   Future<List<TypeModel>> getAllTypes() async {
     final response = await http.get(Uri.parse('$baseUrl/type'));
     if(response.statusCode == 200) {
-      dynamic jsonRes = json.decode(response.body);
-      List<dynamic> jsonList = jsonRes["types"];
+      List<dynamic> jsonList = json.decode(response.body);
       return jsonList.map((obj) => TypeModel.fromJson(obj)).toList();
     } else {
       throw Exception("Failed to load Types");
@@ -47,11 +45,20 @@ class ApiService {
   Future<List<PmabRelationModel>> getAllPmabRelations() async {
     final response = await http.get(Uri.parse('$baseUrl/pokemon_ability'));
     if(response.statusCode == 200) {
-      dynamic jsonRes = json.decode(response.body);
-      List<dynamic> jsonList = jsonRes["relations"];
+      List<dynamic> jsonList = json.decode(response.body);
       return jsonList.map((obj) => PmabRelationModel.fromJson(obj)).toList();
     } else {
       throw Exception("Failed to load Pokemon-Ability Relations");
+    }
+  }
+
+  Future<List<PokemonImageModel>> getAllPokemonImages() async {
+    final response = await http.get(Uri.parse('$baseUrl/pokemon_image'));
+    if(response.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(response.body);
+      return jsonList.map((obj) => PokemonImageModel.fromJson(obj)).toList();
+    } else {
+      throw Exception("Failed to load Pokemon Images");
     }
   }
 }

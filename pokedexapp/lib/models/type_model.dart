@@ -1,11 +1,3 @@
-import 'dart:convert';
-
-List<TypeModel> abilityFromJson(String str) =>
-    List<TypeModel>.from(json.decode(str).map((x) => TypeModel.fromJson(x)));
-
-String abilityToJson(List<TypeModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class TypeModel {
   int id;
   String name;
@@ -24,8 +16,8 @@ class TypeModel {
 
   factory TypeModel.fromJson(Map<String, dynamic> json) {
     return TypeModel(
-        id: json['id'],
-        name: json['name']
+      id: json['id'],
+      name: json['name']
     );
   }
 }
